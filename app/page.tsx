@@ -1,6 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+
+const SUNSET_DATE = new Date('2026-08-26T00:00:00Z');
+
+function getDaysUntilSunset(): number {
+  const now = new Date();
+  const msLeft = SUNSET_DATE.getTime() - now.getTime();
+  return Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));
+}
 
 const SAMPLE_CODE = `import OpenAI from 'openai';
 
@@ -48,6 +56,7 @@ export default function Home() {
   const [result, setResult] = useState<MigrationResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const daysLeft = useMemo(() => getDaysUntilSunset(), []);
 
   async function handleMigrate() {
     setLoading(true);
@@ -84,8 +93,8 @@ export default function Home() {
             Assistants API sunsets August 26, 2026 · Migrate to Responses API or Claude API
           </p>
         </div>
-        <span className="text-xs bg-orange-500/20 text-orange-400 border border-orange-500/30 px-2 py-1 rounded">
-          149 days left
+        <span className={`text-xs px-2 py-1 rounded border ${daysLeft <= 30 ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-orange-500/20 text-orange-400 border-orange-500/30'}`}>
+          {daysLeft} days left
         </span>
       </header>
 
@@ -215,17 +224,14 @@ export default function Home() {
           </div>
         )}
 
-        {/* Footer / CTA */}
+        {/* Footer */}
         <div className="mt-8 border-t border-gray-800 pt-6 text-center">
-          <p className="text-xs text-gray-500 mb-3">
-            Migrate multiple files or entire codebases?
+          <p className="text-xs text-gray-500">
+            Free to use · No signup · Runs in your browser · Built for the August 26 deadline
           </p>
-          <a
-            href="https://gumroad.com"
-            className="inline-block text-xs bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-300 px-4 py-2 rounded transition-colors"
-          >
-            Get the CLI tool — $49 one-time →
-          </a>
+          <p className="text-xs text-gray-600 mt-2">
+            Need to migrate an entire codebase? CLI tool coming soon.
+          </p>
         </div>
       </div>
     </main>
